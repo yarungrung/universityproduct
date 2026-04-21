@@ -1,0 +1,11 @@
+streamlit
+pandas
+numpy
+pydeck
+plotly
+geopandas
+rasterio
+xarray
+rioxarray
+localtileserver
+fsspec
