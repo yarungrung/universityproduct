@@ -3,9 +3,9 @@ import streamlit as st
 # 1. 使用 st.Page() 定義所有頁面
 # 注意：st.Page() 會自動尋找 .py 檔案
 pages = [
-   st.Page("page_home.py", title="專案首頁", icon="🏠"),
-   st.Page("page_3dmap-1.py", title="Pydeck 3D互動地圖瀏覽", icon="🌏"),
-   st.Page("page_3dmap-2.py", title="Plotly 3D互動地圖瀏覽", icon="ℹ️")
+   st.Page("page_home.py", title="首頁", icon="🏠"),
+   st.Page("page_3dmap-1.py", title="「國土分區」的Pydeck 3D互動地圖瀏覽", icon="🌏"),
+   st.Page("page_3dmap-2.py", title="「國土利用」Pydeck 3D互動地圖瀏覽", icon="ℹ️")
 ]
 
 # 2. 使用 st.navigation() 建立導覽 (例如在側邊欄)
