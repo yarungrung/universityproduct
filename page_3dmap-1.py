@@ -1,97 +1,70 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pydeck as pdk
-import requests
+import os
 
-st.title("Pydeck 3D 地圖 (向量 - 密度圖)")
-st.header("終點與平均權衡值的3D圖")
+st.set_page_config(layout="wide") # 讓地圖寬一點比較好看
+st.title("北北基桃交通權衡值 3D 視覺化")
 
-# --- 1. 生成資料 (向量) ---
-file_path = "3D出圖data.json"
-data = pd.read_json(file_path)
- 
+# --- 1. 讀取資料 ---
+# 這裡使用 os 確保路徑正確
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 根據您上傳的檔名，請確保這裡是正確的 (csv 或 xlsx)
+file_path = os.path.join(current_dir, '3D出圖data.csv')
 
-center_lat = 24.9800
-center_lon = 121.4800
-data = pd.DataFrame({
-'lat': center_lat + np.random.randn(1000) / 50,
-'lon': center_lon + np.random.randn(1000) / 50,
-})
+try:
+    # 讀取 CSV (如果是 Excel 請改用 pd.read_excel)
+    df = pd.read_csv(file_path)
+    
+    # 確保資料沒問題 (檢查欄位名)
+    # df 欄位應該包含：'終點經度', '終點緯度', '權衡值_TSC'
+    
+    # 稍微清理一下資料，確保數值正確
+    df['權衡值_TSC'] = pd.to_numeric(df['權衡值_TSC'], errors='coerce').fillna(0)
+    df['終點經度'] = pd.to_numeric(df['終點經度'], errors='coerce')
+    df['終點緯度'] = pd.to_numeric(df['終點緯度'], errors='coerce')
+    df = df.dropna(subset=['終點經度', '終點緯度'])
 
-# --- 2. 設定 Pydeck 圖層 (Layer) ---
-layer_hexagon = pdk.Layer( # 稍微改個名字避免混淆
-    'HexagonLayer',
-    data=data,
-    get_position='[lon, lat]',
-    radius=100,
-    elevation_scale=4,
-    elevation_range=[0, 1000],
-    pickable=True,
-    extruded=True,
-)
+    # --- 2. 設定 Pydeck 圖層 (ColumnLayer) ---
+    # 使用 ColumnLayer 最適合呈現「特定座標點」的高度
+    layer = pdk.Layer(
+        'ColumnLayer',
+        data=df,
+        get_position='[終點經度, 終點緯度]',
+        get_elevation='權衡值_TSC',
+        radius=200,          # 柱子的粗細
+        elevation_scale=10,   # 高度縮放倍率 (如果柱子太矮可以調大)
+        elevation_range=[0, 5000],
+        get_fill_color='[200, 30, 0, 160]', # 顏色 [R, G, B, 透明度]
+        pickable=True,
+        extruded=True,
+    )
 
-# --- 3. 設定攝影機視角 (View State) ---
-view_state_hexagon = pdk.ViewState( # 稍微改個名字避免混淆
-    latitude=24.9800 ,
-    longitude=121.4800,
-    zoom=12,
-    pitch=50,
-)
+    # --- 3. 設定攝影機視角 ---
+    # 以資料的平均中心點作為視角中心
+    view_state = pdk.ViewState(
+        latitude=df['終點緯度'].mean(),
+        longitude=df['終點經度'].mean(),
+        zoom=10,
+        pitch=45,
+    )
 
-# --- 4. 組合圖層和視角並顯示 (第一個地圖) ---
-r_hexagon = pdk.Deck( # 稍微改個名字避免混淆
-    layers=[layer_hexagon],
-    initial_view_state=view_state_hexagon,
-    # mapbox_key=MAPBOX_KEY, # <-- 移除
-    tooltip={"text": "這個區域有 {elevationValue} 個熱點"}
-)
-st.pydeck_chart(r_hexagon)
+    # --- 4. 顯示地圖 ---
+    r = pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        tooltip={
+            "html": "<b>地點:</b> {終點}<br/><b>交通方式:</b> {交通方式}<br/><b>TSC 權衡值:</b> {權衡值_TSC}",
+            "style": {"color": "white"}
+        }
+    )
 
+    st.pydeck_chart(r)
 
-# ===============================================
-#          第二個地圖：模擬 DEM
-# ===============================================
+    # 下方可以放個資料表格檢查一下
+    if st.checkbox("顯示原始資料"):
+        st.write(df)
 
-st.title("Pydeck 3D 地圖")
-st.header("北北基桃網格-DEM模擬")
-# --- 1. 模擬 DEM 網格資料 ---
-x, y = np.meshgrid(np.linspace(-1, 1, 50), np.linspace(-1, 1, 50))
-z = np.exp(-(x**2 + y**2) * 2) * 800 + np.random.rand(50, 50) * 200  # 模擬地形起伏
-
-data_dem_list = [] # 修正: 建立一個列表來收集字典
-base_lat, base_lon = 24.98,121.4800 #新竹市中心點
-for i in range(50):
-    for j in range(50):
-        data_dem_list.append({ # 修正: 將字典附加到列表中
-            "lon": base_lon + x[i, j] * 0.1,
-            "lat": base_lat + y[i, j] * 0.1,
-            "elevation": z[i, j]
-        })
-df_dem = pd.DataFrame(data_dem_list) # 從列表創建 DataFrame
-
-# --- 2. 設定 Pydeck 圖層 (GridLayer) ---
-layer_grid = pdk.Layer( # 稍微改個名字避免混淆
-    'GridLayer',
-    data=df_dem,
-    get_position='[lon, lat]',
-    get_elevation_weight='elevation', # 使用 'elevation' 欄位當作高度
-    elevation_scale=1,
-    cell_size=1500,
-    extruded=True,
-    pickable=True # 加上 pickable 才能顯示 tooltip
-)
-
-# --- 3. 設定視角 (View) ---
-view_state_grid = pdk.ViewState( # 稍微改個名字避免混淆
-    latitude=base_lat, longitude=base_lon, zoom=10, pitch=50
-)
-
-# --- 4. 組合並顯示 (第二個地圖) ---
-r_grid = pdk.Deck( # 稍微改個名字避免混淆
-    layers=[layer_grid],
-    initial_view_state=view_state_grid,
-    # mapbox_key=MAPBOX_KEY, # <--【修正點】移除這裡的 mapbox_key
-    tooltip={"text": "海拔高度: {elevationValue} 公尺"} # GridLayer 用 elevationValue
-)
-st.pydeck_chart(r_grid)
+except Exception as e:
+    st.error(f"讀取檔案時出錯了：{e}")
+    st.info("請確認 '3D出圖data.csv' 已經上傳到 GitHub 並且與 app.py 在同一個資料夾。")
