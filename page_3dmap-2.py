@@ -8,7 +8,7 @@ st.title("Pydeck 3D 地圖 (向量 - 密度圖)")
 st.header("起終點組合的「國土利用」與權衡值(TSC)的關係")
 
 # --- 1. 生成資料 (向量) ---
-file_path = "新竹市公車站牌.json"
+file_path = "3D出圖data.json"
 data = pd.read_json(file_path)
  
 
