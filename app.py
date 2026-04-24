@@ -1,4 +1,20 @@
 import streamlit as st
+import pandas as pd
+
+# 1. 讀取 Excel 檔案
+# 假設你的檔案名稱是 data.xlsx
+df = pd.read_excel('大專生計畫rawdata.xlsx')
+
+# 2. 轉換成 JSON
+# orient='records' 會讓輸出的格式像這樣：[{"欄位1": "值1"}, {"欄位1": "值2"}]
+# force_ascii=False 是為了確保中文不會變成亂碼
+json_str = df.to_json(orient='records', force_ascii=False, indent=4)
+
+# 3. 儲存成 .json 檔
+with open('大專生計畫rawdata.json', 'w', encoding='utf-8') as f:
+    f.write(json_str)
+
+print("轉換成功！")
 
 # 1. 使用 st.Page() 定義所有頁面
 # 注意：st.Page() 會自動尋找 .py 檔案
