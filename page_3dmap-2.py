@@ -60,7 +60,7 @@ x, y = np.meshgrid(np.linspace(-1, 1, 50), np.linspace(-1, 1, 50))
 z = np.exp(-(x**2 + y**2) * 2) * 800 + np.random.rand(50, 50) * 200  # 模擬地形起伏
 
 data_dem_list = [] # 修正: 建立一個列表來收集字典
-base_lat, base_lon = 24.98,121.480 #新竹市中心點
+base_lat, base_lon = 24.98,121.480 
 for i in range(50):
     for j in range(50):
         data_dem_list.append({ # 修正: 將字典附加到列表中
