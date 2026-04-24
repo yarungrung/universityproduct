@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 
+# 獲取目前程式碼所在的位置
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, '3D出圖data.xlsx')
+
+# 讀取檔案
+df = pd.read_excel(file_path)
 # 1. 讀取 Excel 檔案
 # 假設你的檔案名稱是 data.xlsx
 df = pd.read_excel('3D出圖data.xlsx')
