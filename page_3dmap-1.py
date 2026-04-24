@@ -46,7 +46,7 @@ try:
         latitude=df['終點緯度'].mean(),
         longitude=df['終點經度'].mean(),
         zoom=10,
-        pitch=45,
+        pitch=60,
     )
 
     # --- 4. 顯示地圖 ---
