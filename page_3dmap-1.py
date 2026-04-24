@@ -33,7 +33,7 @@ try:
         get_position='[終點經度, 終點緯度]',
         get_elevation='權衡值_TSC',
         radius=200,          # 柱子的粗細
-        elevation_scale=10,   # 高度縮放倍率 (如果柱子太矮可以調大)
+        elevation_scale=1,   # 高度縮放倍率 (如果柱子太矮可以調大)
         elevation_range=[0, 5000],
         get_fill_color='[200, 30, 0, 160]', # 顏色 [R, G, B, 透明度]
         pickable=True,
