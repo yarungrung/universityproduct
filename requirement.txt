@@ -9,4 +9,3 @@ xarray
 rioxarray
 localtileserver
 fsspec
-pip install pandas openpyxl
