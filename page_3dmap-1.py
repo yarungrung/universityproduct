@@ -5,7 +5,7 @@ import pydeck as pdk
 import requests
 
 st.title("Pydeck 3D 地圖 (向量 - 密度圖)")
-st.header("起終點組合的「國土分區」與權衡值(TSC)的關係")
+st.header("終點與平均權衡值的3D圖")
 
 # --- 1. 生成資料 (向量) ---
 file_path = "新竹市公車站牌.json"
