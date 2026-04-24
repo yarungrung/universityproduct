@@ -3,7 +3,7 @@ import pandas as pd
 
 # 1. 讀取 Excel 檔案
 # 假設你的檔案名稱是 data.xlsx
-df = pd.read_excel('觀光景點data.xlsx')
+df = pd.read_excel('3D出圖data.xlsx')
 
 # 2. 轉換成 JSON
 # orient='records' 會讓輸出的格式像這樣：[{"欄位1": "值1"}, {"欄位1": "值2"}]
@@ -11,7 +11,7 @@ df = pd.read_excel('觀光景點data.xlsx')
 json_str = df.to_json(orient='records', force_ascii=False, indent=4)
 
 # 3. 儲存成 .json 檔
-with open('觀光景點data.json', 'w', encoding='utf-8') as f:
+with open('3D出圖data.json', 'w', encoding='utf-8') as f:
     f.write(json_str)
 
 print("轉換成功！")
