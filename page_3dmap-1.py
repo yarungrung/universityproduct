@@ -4,7 +4,7 @@ import pydeck as pdk
 import os
 
 st.set_page_config(layout="wide")
-st.title("北北基桃交通權衡值 3D 視覺化 (起終點平均)")
+st.title("北北基桃交通權衡值平均 3D 視覺化 ")
 
 # --- 1. 讀取與處理資料 ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +31,7 @@ try:
         get_position='[終點經度, 終點緯度]',
         get_elevation='權衡值_TSC',
         radius=350,            # 增加半徑讓柱子更紮實
-        elevation_scale=0.5,   # 降低高度縮放，讓整體變矮但保有差異
+        elevation_scale=3,   # 降低高度縮放，讓整體變矮但保有差異
         get_fill_color='[80, 150, 200, 180]', # 改成藍色系增加透明質感
         pickable=True,
         extruded=True,
